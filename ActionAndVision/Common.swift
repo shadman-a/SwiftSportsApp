@@ -116,7 +116,7 @@ struct GameConstants {
     static let maxThrows = 8
     static let newGameTimer = 5
     static let boardLength = 1.22
-    static let trajectoryLength = 10
+    static let trajectoryLength = 15
     // minimumObjectSize is calculated as (radius of object to be detected / buffer width)
     static let minimumObjectSize = Float(6.0 / 1920)
     static let maxPoseObservations = 45

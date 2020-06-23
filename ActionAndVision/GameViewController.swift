@@ -186,10 +186,11 @@ class GameViewController: UIViewController, AVCaptureVideoDataOutputSampleBuffer
     func resetTrajectoryRegions() {
         let boardRegion = gameManager.boardRegion
         let playerRegion = playerBoundingBox.frame
+        let throwWindowXBuffer: CGFloat = 50
         let throwWindowYBuffer: CGFloat = 50
         let targetWindowXBuffer: CGFloat = 50
         let throwRegionWidth: CGFloat = 400
-        throwRegion = CGRect(x: playerRegion.maxX, y: 0, width: throwRegionWidth, height: playerRegion.maxY - throwWindowYBuffer)
+        throwRegion = CGRect(x: playerRegion.maxX + throwWindowXBuffer, y: 0, width: throwRegionWidth, height: playerRegion.maxY - throwWindowYBuffer)
         targetRegion = CGRect(x: boardRegion.minX - targetWindowXBuffer, y: 0,
                               width: boardRegion.width + 2 * targetWindowXBuffer, height: boardRegion.maxY)
     }
