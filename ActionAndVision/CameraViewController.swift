@@ -2,7 +2,7 @@
 See LICENSE folder for this sample’s licensing information.
 
 Abstract:
-NEEDS DESCRIPTION
+The camera view controller manages the video capture pipeline.
 */
 
 import UIKit
