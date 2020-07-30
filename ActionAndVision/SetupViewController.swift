@@ -145,9 +145,9 @@ class SetupViewController: UIViewController {
         }
         // First, find the board edge which is the longest diagonal segment of the contour
         // located in the top part of the board's bounding box.
-        let contourPoints = boardContour.normalizedPointsArray
+        let contourPoints = boardContour.normalizedPoints.map { return CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) }
         let diagonalThreshold = CGFloat(0.02)
-        var largestDiff = CGFloat(0)
+        var largestDiff = CGFloat(0.0)
         let boardPath = UIBezierPath()
         let countLessOne = contourPoints.count - 1
         // Both points should be in the top 2/3rds of the board's bounding box.
@@ -273,6 +273,7 @@ extension SetupViewController: CameraViewControllerOutputDelegate {
     private func detectBoardContours(_ controller: CameraViewController, _ buffer: CMSampleBuffer, _ orientation: CGImagePropertyOrientation) throws {
         let visionHandler = VNImageRequestHandler(cmSampleBuffer: buffer, orientation: orientation, options: [:])
         let contoursRequest = VNDetectContoursRequest()
+        contoursRequest.contrastAdjustment = 1.6 // the default contrast is 2.0 but in this case 1.6 gives us more reliable results
         contoursRequest.regionOfInterest = boardBoundingBox.visionRect
         try visionHandler.perform([contoursRequest])
         if let result = contoursRequest.results?.first as? VNContoursObservation {
@@ -335,12 +336,5 @@ extension SetupViewController: GameStateChangeObserver {
         default:
             break
         }
-    }
-}
-
-extension VNContour {
-    var normalizedPointsArray: [CGPoint] {
-        let pointsBuffer = UnsafeBufferPointer<simd_float2>(start: normalizedPoints, count: Int(pointCount))
-        return Array(pointsBuffer).map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) }
     }
 }
