@@ -150,7 +150,7 @@ class GameViewController: UIViewController, AVCaptureVideoDataOutputSampleBuffer
         boundingBox.perform(transition: (rect == nil ? .fadeOut : .fadeIn), duration: 0.1)
     }
 
-    func humanBoundingBox(for observation: VNRecognizedPointsObservation) -> CGRect {
+    func humanBoundingBox(for observation: VNHumanBodyPoseObservation) -> CGRect {
         var box = CGRect.zero
         var normalizedBoundingBox = CGRect.null
         // Process body points only if the confidence is high.
@@ -334,10 +334,9 @@ extension GameViewController: CameraViewControllerOutputDelegate {
             }
             // Perform the trajectory request in a separate dispatch queue.
             trajectoryQueue.async {
-                self.detectTrajectoryRequest.minimumObjectSize = GameConstants.minimumObjectSize
                 do {
                     try visionHandler.perform([self.detectTrajectoryRequest])
-                    if let results = self.detectTrajectoryRequest.results as? [VNTrajectoryObservation] {
+                    if let results = self.detectTrajectoryRequest.results {
                         DispatchQueue.main.async {
                             self.processTrajectoryObservations(controller, results)
                         }
@@ -352,7 +351,7 @@ extension GameViewController: CameraViewControllerOutputDelegate {
         if !(self.trajectoryView.inFlight && self.trajectoryInFlightPoseObservations >= GameConstants.maxTrajectoryInFlightPoseObservations) {
             do {
                 try visionHandler.perform([detectPlayerRequest])
-                if let result = detectPlayerRequest.results?.first as? VNRecognizedPointsObservation {
+                if let result = detectPlayerRequest.results?.first {
                     let box = humanBoundingBox(for: result)
                     let boxView = playerBoundingBox
                     DispatchQueue.main.async {

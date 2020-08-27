@@ -133,7 +133,7 @@ class SetupViewController: UIViewController {
     func analyzeBoardContours(_ contours: [VNContour]) -> (edgePath: CGPath, holePath: CGPath)? {
         // Simplify contours and ignore resulting contours with less than 3 points.
         let polyContours = contours.compactMap { (contour) -> VNContour? in
-            guard let polyContour = try? contour.polygonApproximation(withEpsilon: 0.01),
+            guard let polyContour = try? contour.polygonApproximation(epsilon: 0.01),
                   polyContour.pointCount >= 3 else {
                 return nil
             }

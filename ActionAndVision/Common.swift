@@ -51,7 +51,7 @@ struct PlayerStats {
     var avgSpeed = 0.0
     var releaseAngle = 0.0
     var avgReleaseAngle = 0.0
-    var poseObservations = [VNRecognizedPointsObservation]()
+    var poseObservations = [VNHumanBodyPoseObservation]()
     var throwPaths = [CGPath]()
     
     mutating func reset() {
@@ -81,7 +81,7 @@ struct PlayerStats {
         throwPaths.append(path)
     }
 
-    mutating func storeObservation(_ observation: VNRecognizedPointsObservation) {
+    mutating func storeObservation(_ observation: VNHumanBodyPoseObservation) {
         if poseObservations.count >= GameConstants.maxPoseObservations {
             poseObservations.removeFirst()
         }
@@ -117,35 +117,33 @@ struct GameConstants {
     static let newGameTimer = 5
     static let boardLength = 1.22
     static let trajectoryLength = 15
-    // minimumObjectSize is calculated as (radius of object to be detected / buffer width)
-    static let minimumObjectSize = Float(6.0 / 1920)
     static let maxPoseObservations = 45
     static let noObservationFrameLimit = 20
     static let maxDistanceWithCurrentTrajectory: CGFloat = 250
     static let maxTrajectoryInFlightPoseObservations = 10
 }
 
-let jointsOfInterest: [VNRecognizedPointKey] = [
-    .bodyLandmarkKeyRightWrist,
-    .bodyLandmarkKeyRightElbow,
-    .bodyLandmarkKeyRightShoulder,
-    .bodyLandmarkKeyRightHip,
-    .bodyLandmarkKeyRightKnee,
-    .bodyLandmarkKeyRightAnkle
+let jointsOfInterest: [VNHumanBodyPoseObservation.JointName] = [
+    .rightWrist,
+    .rightElbow,
+    .rightShoulder,
+    .rightHip,
+    .rightKnee,
+    .rightAnkle
 ]
 
-func armJoints(for observation: VNRecognizedPointsObservation) -> (CGPoint, CGPoint) {
+func armJoints(for observation: VNHumanBodyPoseObservation) -> (CGPoint, CGPoint) {
     var rightElbow = CGPoint(x: 0, y: 0)
     var rightWrist = CGPoint(x: 0, y: 0)
 
-    guard let identifiedPoints = try? observation.recognizedPoints(forGroupKey: .all) else {
+    guard let identifiedPoints = try? observation.recognizedPoints(.all) else {
         return (rightElbow, rightWrist)
     }
     for (key, point) in identifiedPoints where point.confidence > 0.1 {
         switch key {
-        case .bodyLandmarkKeyRightElbow:
+        case .rightElbow:
             rightElbow = point.location
-        case .bodyLandmarkKeyRightWrist:
+        case .rightWrist:
             rightWrist = point.location
         default:
             break
@@ -154,15 +152,15 @@ func armJoints(for observation: VNRecognizedPointsObservation) -> (CGPoint, CGPo
     return (rightElbow, rightWrist)
 }
 
-func getBodyJointsFor(observation: VNRecognizedPointsObservation) -> ([String: CGPoint]) {
-    var joints = [String: CGPoint]()
-    guard let identifiedPoints = try? observation.recognizedPoints(forGroupKey: .all) else {
+func getBodyJointsFor(observation: VNHumanBodyPoseObservation) -> ([VNHumanBodyPoseObservation.JointName: CGPoint]) {
+    var joints = [VNHumanBodyPoseObservation.JointName: CGPoint]()
+    guard let identifiedPoints = try? observation.recognizedPoints(.all) else {
         return joints
     }
     for (key, point) in identifiedPoints {
         guard point.confidence > 0.1 else { continue }
         if jointsOfInterest.contains(key) {
-            joints[key.rawValue] = point.location
+            joints[key] = point.location
         }
     }
     return joints
@@ -186,7 +184,7 @@ func warmUpVisionPipeline() {
 
 // MARK: - Activity Classification Helpers
 
-func prepareInputWithObservations(_ observations: [VNRecognizedPointsObservation]) -> MLMultiArray? {
+func prepareInputWithObservations(_ observations: [VNHumanBodyPoseObservation]) -> MLMultiArray? {
     let numAvailableFrames = observations.count
     let observationsNeeded = 45
     var multiArrayBuffer = [MLMultiArray]()
