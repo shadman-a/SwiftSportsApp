@@ -2,7 +2,7 @@
 See LICENSE folder for this sample’s licensing information.
 
 Abstract:
-View that displays a bounding box and optional bezier path.
+View that displays a bounding box and optional Bézier path.
 */
 
 import UIKit

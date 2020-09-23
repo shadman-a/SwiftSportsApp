@@ -121,7 +121,7 @@ class TrajectoryView: UIView, AnimatedTransitioning {
             distanceWithCurrentTrajectory < GameConstants.maxDistanceWithCurrentTrajectory {
             if !inFlight {
                 // This is the first trajectory detected for the throw. Compute the speed in pts/sec
-                // Length of the trajectory is calculated by measuring the distance between the first and lastpoint on the trajectory
+                // Length of the trajectory is calculated by measuring the distance between the first and last point on the trajectory
                 // length = sqrt((final.x - start.x)^2 + (final.y - start.y)^2)
                 let trajectoryLength = trajectory.currentPoint.distance(to: startScaled)
                 
