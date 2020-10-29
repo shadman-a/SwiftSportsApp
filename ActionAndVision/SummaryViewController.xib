@@ -88,7 +88,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ns6-GI-Ro2" userLabel="Separator2">
-                    <rect key="frame" x="581" y="324" width="3" height="57"/>
+                    <rect key="frame" x="581" y="325" width="3" height="57"/>
                     <color key="backgroundColor" white="1" alpha="0.74737381609999998" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <viewLayoutGuide key="safeArea" id="pik-dh-6VH"/>
                 </view>
